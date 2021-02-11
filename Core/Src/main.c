@@ -95,6 +95,7 @@ int main(void)
 	  GPIO_PinState SwitchState[2]; 	//Now, Previous
 	  uint16_t LED1_Half_Period = 500; 	// 1 Hz
 	  uint32_t TimeStamp = 0;
+	  uint32_t ButtonTimeStamp = 0;
 
   //------------------------------------------------------
   /* USER CODE END 2 */
@@ -103,22 +104,28 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  SwitchState[0] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
-	  //Press = Low , No = High
-	  if(SwitchState[0] == GPIO_PIN_SET && SwitchState[1] == GPIO_PIN_RESET)
-	  // set = high , reset = low
+	  if(HAL_GetTick() - ButtonTimeStamp >= 100)
 	  {
-		  //Change Half Period of LED 1
-		  if(LED1_Half_Period == 500)
-		  {
-			  LED1_Half_Period = 250;
-		  }
-		  else
-		  {
-			  LED1_Half_Period = 500;
-		  }
+		  ButtonTimeStamp = HAL_GetTick();
+
+		  SwitchState[0] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
+		  	  //Press = Low , No = High
+		  	  if(SwitchState[0] == GPIO_PIN_SET && SwitchState[1] == GPIO_PIN_RESET)
+		  	  // set = high , reset = low
+		  	  {
+		  		  //Change Half Period of LED 1
+		  		  if(LED1_Half_Period == 500)
+		  		  {
+		  			  LED1_Half_Period = 250;
+		  		  }
+		  		  else
+		  		  {
+		  			  LED1_Half_Period = 500;
+		  		  }
+		  	  }
+		  	  SwitchState[1] = SwitchState[0];
 	  }
-	  SwitchState[1] = SwitchState[0];
+
 
 
 	  //Run LED
