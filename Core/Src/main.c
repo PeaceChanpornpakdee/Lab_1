@@ -102,6 +102,7 @@ int main(void)
 
   while (1)
   {
+	  //********** SWITCH **********
 	  if(HAL_GetTick() - ButtonTimeStamp >= 100)
 	  {
 		  ButtonTimeStamp = HAL_GetTick();
@@ -126,26 +127,11 @@ int main(void)
 		  		  		  LED1_Half_Period = 1000; //3 Hz -> 0.5 Hz
 						  break;
 		  		  }
-
-
-//		  		  if(LED1_Half_Period == 1000)
-//				  {
-//
-//				  }
-//		  		  else if(LED1_Half_Period == 500)
-//		  		  {
-//		  			  LED1_Half_Period = 250;
-//		  		  }
-//
-//		  		  else
-//		  		  {
-//		  			  LED1_Half_Period = 500;
-//		  		  }
 		  	  }
 		  	  SwitchState[1] = SwitchState[0];
 	  }
 
-	  //Run LED
+	  ////********** LED **********
 	  if(HAL_GetTick() - TimeStamp >= LED1_Half_Period) //millisecond now time
 	  {
 		  TimeStamp = HAL_GetTick();
