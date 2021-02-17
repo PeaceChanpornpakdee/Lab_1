@@ -88,13 +88,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   //----------------------------------------------------------------
 
-	  GPIO_PinState Switch_1_State[2]; 		//Now Previous
-	  GPIO_PinState Switch_2_State[2]; 		//Now Previous
+	  GPIO_PinState Switch_1_State[2]; 		//Now  Previous
+	  GPIO_PinState Switch_2_State[2];
+	  GPIO_PinState Switch_3_State[2];
 	  uint16_t LED1_Half_Period = 1000; 	// 0.5 Hz
 	  uint32_t TimeStamp = 0;
-	  uint32_t LED_2_TimeStamp = 0;
 	  uint32_t ButtonTimeStamp = 0;
-	  uint8_t  Switch_2_isPressed = 1;
+	  uint8_t  Switch_2_isPressed = 0;
+	  uint8_t  LED3_Mode = 1;
 
   //---------------------------------------------------------------
   /* USER CODE END 2 */
@@ -109,11 +110,9 @@ int main(void)
 	  if(HAL_GetTick() - ButtonTimeStamp >= 100)
 	  {
 		  ButtonTimeStamp = HAL_GetTick();
-
 		  Switch_1_State[0] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10); // Press = Low , No = High
 		  if(Switch_1_State[0] == GPIO_PIN_SET && Switch_1_State[1] == GPIO_PIN_RESET) // SET = high , RESET = low
 		  {
-			  //Change Half Period of LED 1
 			  switch(LED1_Half_Period)
 			  {
 				  case(1000):
@@ -132,48 +131,61 @@ int main(void)
 		  }
 		  Switch_1_State[1] = Switch_1_State[0];
 
-//		  Switch_2_State[0] = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
-//		  if(Switch_2_State[0] == GPIO_PIN_SET && Switch_2_State[1] == GPIO_PIN_RESET) // SET = high , RESET = low
-//		  {
-//			  Switch_2_isPressed = 1;
-////			  LED1_Half_Period = 167;
-//		  }
-//		  Switch_2_State[1] = Switch_1_State[0];
+
+		  Switch_2_State[0] = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
+		  if(Switch_2_State[0] == GPIO_PIN_SET && Switch_2_State[1] == GPIO_PIN_RESET)
+		  {
+			  Switch_2_isPressed = 1;
+		  }
+		  Switch_2_State[1] = Switch_2_State[0];
+
+
+		  Switch_3_State[0] = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
+		  if(Switch_3_State[0] == GPIO_PIN_SET && Switch_2_State[1] == GPIO_PIN_RESET)
+		  {
+			  switch(LED3_Mode)
+			  {
+				  case(1):
+					  LED3_Mode = 2; //ON 0.5 OFF 1.5
+					  break;
+
+				  default:
+					  LED3_Mode = 1; //ON 1.5 OFF 0.5
+					  break;
+			  }
+		  }
+		  Switch_3_State[1] = Switch_3_State[0];
 	  }
+
+
 
 	  ////********** LED **********
 	  if(HAL_GetTick() - TimeStamp >= LED1_Half_Period) //millisecond now time
 	  {
 		  TimeStamp = HAL_GetTick();
-		  if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9) == GPIO_PIN_SET)
-//		  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == GPIO_PIN_SET)
+		  if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9) == GPIO_PIN_SET)  // SET = Light OFF   RESET = Light ON
 		  {
 			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
-			  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 		  }
 		  else
 		  {
 			  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
-			  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
 		  }
 	  }
 
 
-
-
-//	  if(Switch_2_isPressed == 1)
-//	  {
-//		  LED1_Half_Period = 167;
-//		  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == GPIO_PIN_SET)
-//		  {
-//			  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
-//		  }
-//		  else
-//		  {
-//			  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-//		  }
-//		  Switch_2_isPressed = 0;
-//	  }
+	  if(Switch_2_isPressed == 1)
+	  {
+		  if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == GPIO_PIN_SET)
+		  {
+			  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+		  }
+		  else
+		  {
+			  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+		  }
+		  Switch_2_isPressed = 0;
+	  }
 
 
 	 //---------------------------------------------------------------
