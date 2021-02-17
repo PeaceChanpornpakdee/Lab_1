@@ -96,6 +96,10 @@ int main(void)
 	  uint32_t ButtonTimeStamp = 0;
 	  uint8_t  Switch_2_isPressed = 0;
 	  uint8_t  LED3_Mode = 1;
+	  uint16_t LED3_First_Half  = 1500;
+	  uint16_t LED3_Second_Half = 500;
+	  uint32_t LED3_TimeStamp = 0;
+
 
   //---------------------------------------------------------------
   /* USER CODE END 2 */
@@ -141,16 +145,20 @@ int main(void)
 
 
 		  Switch_3_State[0] = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
-		  if(Switch_3_State[0] == GPIO_PIN_SET && Switch_2_State[1] == GPIO_PIN_RESET)
+		  if(Switch_3_State[0] == GPIO_PIN_SET && Switch_3_State[1] == GPIO_PIN_RESET)
 		  {
 			  switch(LED3_Mode)
 			  {
 				  case(1):
-					  LED3_Mode = 2; //ON 0.5 OFF 1.5
+					  LED3_First_Half  = 500;
+					  LED3_Second_Half = 1500;
+					  LED3_Mode        = 2;
 					  break;
 
 				  default:
-					  LED3_Mode = 1; //ON 1.5 OFF 0.5
+					  LED3_First_Half  = 1500;
+					  LED3_Second_Half = 500;
+					  LED3_Mode        = 1;
 					  break;
 			  }
 		  }
@@ -186,6 +194,29 @@ int main(void)
 		  }
 		  Switch_2_isPressed = 0;
 	  }
+
+
+	  if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == GPIO_PIN_RESET)
+	  {
+		  if(HAL_GetTick() - LED3_TimeStamp >= LED3_First_Half)
+		  {
+			  LED3_TimeStamp = HAL_GetTick();
+			  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+		  }
+
+	  }
+
+	  if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == GPIO_PIN_SET)
+	  {
+		  if(HAL_GetTick() - LED3_TimeStamp >= LED3_Second_Half)
+		  {
+			  LED3_TimeStamp = HAL_GetTick();
+			  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
+		  }
+
+	  }
+
+
 
 
 	 //---------------------------------------------------------------
